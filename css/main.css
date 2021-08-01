@@ -1,0 +1,58 @@
+@charset 'utf-8';
+html {
+	font-family: 'Nanum Gothic', sans-serif;
+	font-size: 14px;
+}
+body {
+	color:  rgba(29, 29, 31, 100);
+	letter-spacing: 0.05em;
+	background: #fff;
+}
+p {
+	line-height: 1.6;
+}
+a {
+	color: rgba(29, 29, 31, 100);
+	text-decoration: none;
+}
+.global-nav {
+	height: 44px;
+	
+}
+.local-nav {
+	height: 52px;
+	border-bottom: 1px solid #ddd;
+}
+.global-nav-links {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	height: 100%;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+.local-nav-links {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+.product-name {
+	margin-right: auto;
+	/* margin 값에 auto를 입력시 사용가능한 모든 영역을 사용한다 */
+}
+.local-nav-links li:not(.product-name) {
+	margin-left: 2em;
+}
+
+
+/* 여기부터는 디자인 요소 */
+
+.local-nav-links a {
+	font-size: 0.8rem;
+}
+.local-nav-links .product-name a{
+	font-size: 1.4rem;
+	font-weight: 800;
+}
