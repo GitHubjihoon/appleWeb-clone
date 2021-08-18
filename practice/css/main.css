@@ -22,6 +22,7 @@ a {
 	width: 100%;  /* position: absolute는 width값 100% 부여해주어야 한다 */
 	height: 44px;
 	padding: 0 1rem;
+	z-index: 10;
 	
 }
 .local-nav {
@@ -32,6 +33,7 @@ a {
 	height: 52px;
 	padding: 0 1rem;
 	border-bottom: 1px solid #ddd;
+	z-index: 11;
 }
 .global-nav-links {
 	display: flex;
@@ -75,10 +77,19 @@ a {
 	font-size: 4rem;
 	text-align: center;
 }
+#scroll-section-2 .b {
+	top: 10%;
+	left: 40%;
+}
+#scroll-section-2 .c {
+	top: 15%;
+	left: 45%;
+}
 .main-message {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	top: 35vh;
 	height: 3em;
 	font-size: 2.2rem;
 	margin: 5px 0;
@@ -147,7 +158,6 @@ a {
 .sticky-elem {
 	display: none;
 	position: fixed;
-	top: 0;
 	left: 0;
 	width: 100%;
 }
@@ -157,7 +167,16 @@ body#show-scene-2 #scroll-section-2 .sticky-elem,
 body#show-scene-3 #scroll-section-3 .sticky-elem {
 	display: block;
 }
-
+.sticky-elem-canvas {
+	top: 0;
+	height: 100vh;
+}
+.sticky-elem-canvas canvas {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	/* translate: (-50%, -50%); js에서 작성한 코드가 있어서 여기서 조절 불가 js를 통해서 수정해야함 */
+}
 @media (min-width: 1024px) {
 	#scroll-section-0 h1 {
 		font-size: 9vw;
@@ -179,6 +198,14 @@ body#show-scene-3 #scroll-section-3 .sticky-elem {
 	}
 	.desc-message {
 		width: 20%;
+	}
+	#scroll-section-2 .b {
+		top: 20%;
+		left: 53%;
+	}
+	#scroll-section-2 .c {
+		top: 15%;
+		left: 55%;
 	}
 	.mid-message {
 		font-size: 4vw;
