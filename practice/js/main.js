@@ -25,6 +25,7 @@
                 // 속성 명: [초기 값, 결과 값, { 효과(애니메이션) 적용 타이밍 }]
                 videoImageCount: 300, // 재생할 이미지 갯 수 
                 imageSequence: [0, 299], // 재생할 미지지 시작 값과 끝 값
+                canvas_opacity: [1, 0, { start: 0.9, end: 1 }],
 
                 messageA_opacity_in: [0, 1, { start: 0.1, end: 0.2 }],
                 messageB_opacity_in: [0, 1, { start: 0.3, end: 0.4 }],
@@ -65,9 +66,17 @@
                 messageB: document.querySelector('#scroll-section-2 .b'),
                 messageC: document.querySelector('#scroll-section-2 .c'),
                 pinB: document.querySelector('#scroll-section-2 .b .pin'),
-                pinC: document.querySelector('#scroll-section-2 .c .pin')
+                pinC: document.querySelector('#scroll-section-2 .c .pin'),
+                canvas: document.querySelector('#video-canvas-1'),
+                context: document.querySelector('#video-canvas-1').getContext('2d'),
+                videoImages: [] // 로드된(loaded) 이미지를 담아둘 배열
             },
             values: {
+                videoImageCount: 960, // 재생할 이미지 갯 수 
+                imageSequence: [0, 959], // 재생할 미지지 시작 값과 끝 값
+                canvas_opacity_in: [0, 1, { start: 0, end: 0.1 }],
+                canvas_opacity_out: [1, 0, { start: 0.95, end: 1 }],
+
                 messageA_translateY_in: [20, 0, { start: 0.15, end: 0.2 }],
                 messageB_translateY_in: [30, 0, { start: 0.6, end: 0.65 }],
                 messageC_translateY_in: [30, 0, { start: 0.87, end: 0.92 }],
@@ -99,7 +108,7 @@
         }
     ];
 
-    // 이미지 로드(loaded)하는 함수이미지를 저장소에서 불러오는 함수
+    // 이미지 로드(loaded)하는 함수 이미지를 저장소에서 브라우져로 불러오는 함수
     function setCanvasImages() {
         let imgElem;
         for (let i = 0; i < sceneInfo[0].values.videoImageCount; i++) {
@@ -107,8 +116,15 @@
             imgElem.src = `../../video/001/IMG_${6726 + i}.JPG`;
             sceneInfo[0].objs.videoImages.push(imgElem);
         }
+
+        let imgElem2;
+        for (let i = 0; i < sceneInfo[2].values.videoImageCount; i++) {
+            imgElem2 = document.createElement('img');
+            imgElem2.src = `../../video/002/IMG_${7027 + i}.JPG`;
+            sceneInfo[2].objs.videoImages.push(imgElem2);
+        }
     }
-    setCanvasImages()
+    setCanvasImages();
 
     function setLayout() {
         // 각 스크롤 섹션의 높이 세팅
@@ -122,6 +138,7 @@
             
         }
 
+        // 지금 활성화된 씬 찾기
         let totalScrollHeight = 0;
         yOffset = window.pageYOffset;
         for (let i = 0; i < sceneInfo.length; i++) {
@@ -133,8 +150,10 @@
         }
         document.body.setAttribute('id', `show-scene-${currentScene}`);
 
+        // 화면 높이값 비율에 맞춰 캔버스 이미지 크기 세팅하기(반응형)
         const heightRatio = window.innerHeight / 1080;
         sceneInfo[0].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+        sceneInfo[2].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
     }
 
     function calcValues(values, currentYOffset) {
@@ -171,13 +190,14 @@
         const scrollHeight = sceneInfo[currentScene].scrollHeight;
         const scrollRatio = currentYOffset / scrollHeight;
 
-        console.log(currentScene, currentYOffset);
-
         switch (currentScene) {
             case 0:
                 // console.log('0 play');
-                let sequence = Math.round(calcValues(values.imageSequence, currentYOffset));
-                objs.context.drawImage(objs.videoImages[sequence], 0, 0);
+
+                // 스크롤 값에 반응하는 캔버스 애니메이션
+                let sequence = Math.round(calcValues(values.imageSequence, currentYOffset)); // 스크롤 값 가져오기
+                objs.context.drawImage(objs.videoImages[sequence], 0, 0); // 스크롤 값에 맞는 이미지 그리기
+                objs.canvas.style.opacity = calcValues(values.canvas_opacity, currentYOffset);
 
                 if (scrollRatio <= 0.22) {
                     // in
@@ -223,6 +243,18 @@
     
             case 2:
                 // console.log('2 play');
+                // 스크롤 값에 반응하는 캔버스 애니메이션
+                let sequence2 = Math.round(calcValues(values.imageSequence, currentYOffset)); // 스크롤 값 가져오기
+                objs.context.drawImage(objs.videoImages[sequence2], 0, 0); // 스크롤 값에 맞는 이미지 그리기
+                
+                if (scrollRatio <= 0.5) {
+                    // in
+                    objs.canvas.style.opacity = calcValues(values.canvas_opacity_in, currentYOffset);
+                } else {
+                    // out
+                    objs.canvas.style.opacity = calcValues(values.canvas_opacity_out, currentYOffset);
+                }
+
                 if (scrollRatio <= 0.32) {
                     // in
                     objs.messageA.style.opacity = calcValues(values.messageA_opacity_in, currentYOffset);
@@ -268,7 +300,7 @@
     function scrollLoop() {
         enterNewScene = false;
         prevScrollHeight = 0;
-        for (let i =0; i < currentScene; i++) {
+        for (let i = 0; i < currentScene; i++) {
             prevScrollHeight += sceneInfo[i].scrollHeight;
         }
 
@@ -295,8 +327,10 @@
         scrollLoop();
     });
 
+    window.addEventListener('load', () => {
+        setLayout();
+        sceneInfo[0].objs.context.drawImage(sceneInfo[0].objs.videoImages[0], 0, 0);
+    });
     window.addEventListener('resize',setLayout);
-    window.addEventListener('load', setLayout);
-
 
 })();
